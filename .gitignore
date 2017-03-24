@@ -2,6 +2,7 @@
 data/
 train/
 pretrain/
+.ipynb_checkpoints
 *.bak
 *.pyc
 __pycache__
