@@ -2,6 +2,7 @@
 data/
 train/
 pretrain/
+.vscode/
 .ipynb_checkpoints
 *.bak
 *.pyc
