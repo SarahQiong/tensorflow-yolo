@@ -1,11 +1,14 @@
 .DS_Store
 data/
+test/
 train/
 pretrain/
 .ipynb_checkpoints
 *.bak
 *.pyc
+*.npz
 __pycache__
+
 
 
 
