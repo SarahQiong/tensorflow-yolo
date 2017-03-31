@@ -6,7 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
-from yolo.net.yolo_tiny_net import YoloTinyNet
+from yolo.net.yolo_net import YoloNet
 from yolo.dataset.text_dataset import TextDataSet
 from demo import *
 # in total we have 714 test images
@@ -41,20 +41,19 @@ dataset =  TextDataSetV2(common_parameters, dataset_parameters)
 classes_name = ['bare soil', 'dead tree']
 net_params = {'cell_size': 7, 'boxes_per_cell':2, 'weight_decay': 0.0005}
 batch_size = common_parameters['batch_size']
-net = YoloTinyNet(common_parameters, net_params, test=True)
+net = YoloNet(common_parameters, net_params, test=True)
 image = tf.placeholder(tf.float32, (None, 448, 448, 3))
 predicts = net.inference(image)
 sess = tf.Session()
-
+saver = tf.train.Saver(net.trainable_collection)
+ckpt = tf.train.get_checkpoint_state('models/train/backup_full_model')
+saver.restore(sess,ckpt.model_checkpoint_path)
 num_imgs = 714 // batch_size * batch_size
 predicted_boxes = np.zeros((num_imgs, net_params['cell_size'], net_params['cell_size'], \
     12), dtype=np.float32)
 ground_truth_boxes = []
 for i in range(714 // batch_size):
     images, labels, objects_num = dataset.batch()
-    saver = tf.train.Saver(net.trainable_collection)
-    ckpt = tf.train.get_checkpoint_state('models/train/')
-    saver.restore(sess,ckpt.model_checkpoint_path)
     np_predict = sess.run(predicts, feed_dict={image: images})
     assert np_predict.shape[-1] == 12
     predicted_boxes[i * batch_size:(i+1) * batch_size] = np_predict
@@ -101,7 +100,7 @@ def compute_precision_and_recall(predicted_boxes, ground_truth_boxes, p_threshol
     print('p_tp: {}\tr_tp: {}\tfn: {}\tfp: {}'.format(p_tp, r_tp, fn, fp))
     return precision, recall
 
-thres_grid = np.arange(1e-5, 0.2, 1e-3)
+thres_grid = np.arange(1e-5, 0.7, 1e-2)
 precision_list = []
 recall_list = []
 for p_threshold in thres_grid:

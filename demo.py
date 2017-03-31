@@ -2,7 +2,7 @@ import sys
 
 sys.path.append('./')
 
-from yolo.net.yolo_tiny_net import YoloTinyNet 
+from yolo.net.yolo_net import YoloNet 
 import tensorflow as tf 
 import cv2
 import numpy as np
@@ -92,7 +92,7 @@ if __name__ == "__main__":
                                     'batch_size':1}
     net_params = {'cell_size': 7, 'boxes_per_cell':2, 'weight_decay': 0.0005}
 
-    net = YoloTinyNet(common_params, net_params, test=True)
+    net = YoloNet(common_params, net_params, test=True)
 
     image = tf.placeholder(tf.float32, (1, 448, 448, 3))
     predicts = net.inference(image)
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     np_img = np.reshape(np_img, (1, 448, 448, 3))
 
     saver = tf.train.Saver(net.trainable_collection)
-    ckpt = tf.train.get_checkpoint_state('models/train/')
+    ckpt = tf.train.get_checkpoint_state('models/train/backup_full_model')
     saver.restore(sess,ckpt.model_checkpoint_path)
 
     np_predict = sess.run(predicts, feed_dict={image: np_img})
