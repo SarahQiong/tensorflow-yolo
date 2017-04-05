@@ -110,7 +110,7 @@ class YoloNet(Net):
 
     local2 = tf.reshape(local2, [tf.shape(local2)[0], self.cell_size, self.cell_size, self.num_classes + 5 * self.boxes_per_cell])
 
-    predicts = tf.nn.relu(local2)
+    predicts = local2
 
 
     return predicts
