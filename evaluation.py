@@ -39,14 +39,14 @@ common_parameters = {'image_size': 448, 'batch_size': 16,\
 dataset_parameters = {'path': 'data/processed_data/test_label.txt', 'thread_num': 5}
 dataset =  TextDataSetV2(common_parameters, dataset_parameters)
 classes_name = ['bare soil', 'dead tree']
-net_params = {'cell_size': 7, 'boxes_per_cell':2, 'weight_decay': 0.0005}
+net_params = {'cell_size': 14, 'boxes_per_cell':2, 'weight_decay': 0.0005}
 batch_size = common_parameters['batch_size']
 net = YoloNet(common_parameters, net_params, test=True)
 image = tf.placeholder(tf.float32, (None, 448, 448, 3))
 predicts = net.inference(image)
 sess = tf.Session()
 saver = tf.train.Saver(net.trainable_collection)
-ckpt = tf.train.get_checkpoint_state('models/train/backup_full_model')
+ckpt = tf.train.get_checkpoint_state('models/train/full')
 saver.restore(sess,ckpt.model_checkpoint_path)
 num_imgs = 714 // batch_size * batch_size
 predicted_boxes = np.zeros((num_imgs, net_params['cell_size'], net_params['cell_size'], \
@@ -100,11 +100,11 @@ def compute_precision_and_recall(predicted_boxes, ground_truth_boxes, p_threshol
     print('p_tp: {}\tr_tp: {}\tfn: {}\tfp: {}'.format(p_tp, r_tp, fn, fp))
     return precision, recall
 
-thres_grid = np.arange(1e-5, 0.7, 1e-2)
+thres_grid = np.arange(1e-5, 0.6, 1e-2)
 precision_list = []
 recall_list = []
 for p_threshold in thres_grid:
-    precision, recall = compute_precision_and_recall(predicted_boxes, ground_truth_boxes, p_threshold)
+    precision, recall = compute_precision_and_recall(predicted_boxes, ground_truth_boxes, p_threshold, 1, 0.3)
     precision_list.append(precision)
     recall_list.append(recall)
 precision = np.asarray(precision_list)

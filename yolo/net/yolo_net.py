@@ -101,7 +101,7 @@ class YoloNet(Net):
 
 
     #Fully connected layer
-    local1 = self.local('local1', temp_conv, 49 * 1024, 4096)
+    local1 = self.local('local1', temp_conv, 7 * 7 * 1024, 4096)
 
 
     local1 = tf.nn.dropout(local1, keep_prob=0.5)
@@ -110,7 +110,7 @@ class YoloNet(Net):
 
     local2 = tf.reshape(local2, [tf.shape(local2)[0], self.cell_size, self.cell_size, self.num_classes + 5 * self.boxes_per_cell])
 
-    predicts = local2
+    predicts = tf.nn.relu(local2)
 
 
     return predicts
@@ -284,7 +284,7 @@ class YoloNet(Net):
       predict = predicts[i, :, :, :]
       label = labels[i, :, :]
       object_num = objects_num[i]
-      nilboy = tf.ones([7,7,2])
+      nilboy = tf.ones([14,14,2])
       tuple_results = tf.while_loop(self.cond1, self.body1, [tf.constant(0), object_num, [class_loss, object_loss, noobject_loss, coord_loss], predict, label, nilboy])
       for j in range(4):
         loss[j] = loss[j] + tuple_results[2][j]

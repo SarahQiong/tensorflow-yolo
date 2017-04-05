@@ -90,7 +90,7 @@ def non_maximum_suppression(box_list, iou_threshold):
 if __name__ == "__main__":
     common_params = {'image_size': 448, 'num_classes': 2, 
                                     'batch_size':1}
-    net_params = {'cell_size': 7, 'boxes_per_cell':2, 'weight_decay': 0.0005}
+    net_params = {'cell_size': 14, 'boxes_per_cell':2, 'weight_decay': 0.0005}
 
     net = YoloNet(common_params, net_params, test=True)
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     sess = tf.Session()
 
-    np_img = cv2.imread('/home/rui/tensorflow-yolo/data/processed_data/test/D1019020201_ob77_crop0.JPG')
+    np_img = cv2.imread('/home/rui/tensorflow-yolo/data/processed_data/test/D1019020201_ob70_crop0.JPG')
     resized_img = cv2.resize(np_img, (448, 448))
     np_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
 
@@ -110,12 +110,12 @@ if __name__ == "__main__":
     np_img = np.reshape(np_img, (1, 448, 448, 3))
 
     saver = tf.train.Saver(net.trainable_collection)
-    ckpt = tf.train.get_checkpoint_state('models/train/backup_full_model')
+    ckpt = tf.train.get_checkpoint_state('models/train/full')
     saver.restore(sess,ckpt.model_checkpoint_path)
 
     np_predict = sess.run(predicts, feed_dict={image: np_img})
 
-    box_list = process_predicts(np_predict, 0.04)
+    box_list = process_predicts(np_predict, 0.000001)
     box_list = non_maximum_suppression(box_list, 0.5)
     for ob in box_list:
         xmin, ymin, xmax, ymax, class_num, p = ob
