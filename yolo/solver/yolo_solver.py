@@ -53,7 +53,10 @@ class YoloSolver(Solver):
 
   def construct_graph(self):
     # construct graph
-    self.global_step = tf.Variable(0, trainable=False)
+    self.global_step = tf.Variable(0, trainable=False, dtype=tf.int64)
+    boundaries = [np.int64(40000), np.int64(80000)]
+    values = [self.learning_rate, self.learning_rate/10, self.learning_rate/100]
+    self.learning_rate = tf.train.piecewise_constant(self.global_step, boundaries, values)
     self.images = tf.placeholder(tf.float32, (self.batch_size, self.height, self.width, 3))
     self.labels = tf.placeholder(tf.float32, (self.batch_size, self.max_objects, 5))
     self.objects_num = tf.placeholder(tf.int32, (self.batch_size))
