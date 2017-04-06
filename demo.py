@@ -25,9 +25,9 @@ def process_predicts(predicts, p_threshold=0.01):
     p_classes = predicts[0, :, :, 0:2]
     C = predicts[0, :, :, 2:4]
     coordinate = predicts[0, :, :, 4:]
-    coordinate = np.reshape(coordinate, (7, 7, 2, 4))
-    p_classes = np.reshape(p_classes, (7, 7, 1, 2))
-    C = np.reshape(C, (7, 7, 2, 1))
+    coordinate = np.reshape(coordinate, (14, 14, 2, 4))
+    p_classes = np.reshape(p_classes, (14, 14, 1, 2))
+    C = np.reshape(C, (14, 14, 2, 1))
 
     P = C * p_classes
 
@@ -47,8 +47,8 @@ def process_predicts(predicts, p_threshold=0.01):
             index = np.argmax(P)
             index = np.unravel_index(index, P.shape)
             continue
-        xcenter = (index[1] + xcenter) * (448/7.0)
-        ycenter = (index[0] + ycenter) * (448/7.0)
+        xcenter = (index[1] + xcenter) * (448/14.0)
+        ycenter = (index[0] + ycenter) * (448/14.0)
 
         w = w * 448
         h = h * 448
