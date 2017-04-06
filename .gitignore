@@ -3,6 +3,7 @@ data/
 test/
 train/
 pretrain/
+prediction/
 .ipynb_checkpoints
 *.bak
 *.pyc

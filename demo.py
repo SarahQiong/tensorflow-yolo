@@ -99,28 +99,24 @@ if __name__ == "__main__":
 
     sess = tf.Session()
 
-    np_img = cv2.imread('/home/rui/tensorflow-yolo/data/processed_data/test/D1019020201_ob70_crop0.JPG')
-    resized_img = cv2.resize(np_img, (448, 448))
-    np_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
-
-
-    np_img = np_img.astype(np.float32)
-
-    np_img = np_img / 255.0 * 2 - 1
-    np_img = np.reshape(np_img, (1, 448, 448, 3))
-
     saver = tf.train.Saver(net.trainable_collection)
     ckpt = tf.train.get_checkpoint_state('models/train/full')
     saver.restore(sess,ckpt.model_checkpoint_path)
 
-    np_predict = sess.run(predicts, feed_dict={image: np_img})
-
-    box_list = process_predicts(np_predict, 0.000001)
-    box_list = non_maximum_suppression(box_list, 0.5)
-    for ob in box_list:
-        xmin, ymin, xmax, ymax, class_num, p = ob
-        class_name = classes_name[class_num]
-        cv2.rectangle(resized_img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0, 0, 255))
-        cv2.putText(resized_img, class_name + ' {:.2f}'.format(p), (int(xmin), int(ymin)), 2, 1.5, (0, 0, 255))
-    cv2.imwrite('test_out.jpg', resized_img)
+    for i in range(10):
+        np_img = cv2.imread('/home/rui/tensorflow-yolo/data/processed_data/test/D1019020201_ob{}_crop0.JPG'.format(i))
+        resized_img = cv2.resize(np_img, (448, 448))
+        np_img = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
+        np_img = np_img.astype(np.float32)
+        np_img = np_img / 255.0 * 2 - 1
+        np_img = np.reshape(np_img, (1, 448, 448, 3))
+        np_predict = sess.run(predicts, feed_dict={image: np_img})
+        box_list = process_predicts(np_predict, 0.1)
+        box_list = non_maximum_suppression(box_list, 0.5)
+        for ob in box_list:
+            xmin, ymin, xmax, ymax, class_num, p = ob
+            class_name = classes_name[class_num]
+            cv2.rectangle(resized_img, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0, 0, 255))
+            cv2.putText(resized_img, '{:.2f}'.format(p), (int(xmin), int(ymin)), 2, 1.5, (0, 0, 255))
+        cv2.imwrite('./models/test_out_{}.jpg'.format(i), resized_img)
     sess.close()
