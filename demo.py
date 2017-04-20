@@ -74,6 +74,7 @@ def _one_step_suppression(box_list, iou_threshold):
     return box_list
 
 def non_maximum_suppression(box_list, iou_threshold):
+    #@param box_list: should be sorted, the confidence should be decreasing.
     if len(box_list) <= 1:
         return box_list
     output = []

@@ -9,7 +9,7 @@ prediction/
 *.pyc
 *.npz
 __pycache__
-
+debug.ipynb
 
 
 
